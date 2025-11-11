@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import os
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods, require_POST
@@ -55,8 +58,13 @@ def signin(request):
                             return redirect("home")
                         else:
                             error = "Invalid email or password."
-            except Exception:
-                error = "Authentication failed. Please try again."
+            except Exception as e:
+                # Log full stack to server logs; show short message to user
+                logger.exception("Auth error (%s): %s", action, e)
+                if action == "signup":
+                    error = "Sign up failed on the server. Please try again."
+                else:
+                    error = "Sign in failed on the server. Please try again."
 
     return render(request, "core/signin.html", {"error": error, "info": info})
 

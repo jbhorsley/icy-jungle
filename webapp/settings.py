@@ -67,5 +67,15 @@ DATABASES = {
     }
 }
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "root": {"handlers": ["console"], "level": "INFO"},
+}
+
+
 STATIC_URL = 'static/'  # ✅ keep or add this
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # ✅ add for deployment later
