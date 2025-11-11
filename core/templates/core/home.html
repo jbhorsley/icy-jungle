@@ -1,14 +1,47 @@
 {% extends "core/base.html" %}
-
 {% block title %}Home • Social Butterfly{% endblock %}
 
 {% block content %}
-  <div class="p-4 bg-white border rounded-3 shadow-sm">
-    <h1 class="h4 mb-2">Welcome</h1>
-    {% if request.session.sb_user_email %}
-      <p class="mb-0">You are signed in. Next we’ll show upcoming events here.</p>
-    {% else %}
-      <p class="mb-0">You’re not signed in. <a href="{% url 'signin' %}">Sign in or create an account</a> to continue.</p>
-    {% endif %}
-  </div>
+  <h1 class="h4 mb-3">Upcoming Events</h1>
+
+  {% if events %}
+    <div class="row g-3">
+      {% for e in events %}
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              {% if e.category %}
+                <span class="badge rounded-pill text-bg-light mb-2">{{ e.category }}</span>
+              {% endif %}
+              <h2 class="h5 mb-2">{{ e.title }}</h2>
+
+              {% if e.datetime %}
+                <div class="d-flex align-items-center gap-2 small text-muted">
+                  <span class="bi bi-calendar-event"></span>
+                  <span>{{ e.datetime|date:"M d, Y" }} · {{ e.datetime|date:"P" }}</span>
+                </div>
+              {% endif %}
+
+              {% if e.location_text %}
+                <div class="small text-muted">{{ e.location_text }}</div>
+              {% endif %}
+
+              {% if e.description %}
+                <p class="mt-2 mb-0 text-secondary" style="min-height:2.5rem;">
+                  {{ e.description|truncatechars:120 }}
+                </p>
+              {% endif %}
+            </div>
+            <div class="card-footer bg-white border-0 pt-0 pb-3 px-3">
+              <a class="btn btn-outline-primary w-100 disabled" role="button" aria-disabled="true">RSVP (soon)</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="p-4 bg-white border rounded-3 shadow-sm">
+      <p class="mb-0">No events to show.</p>
+    </div>
+  {% endif %}
 {% endblock %}
