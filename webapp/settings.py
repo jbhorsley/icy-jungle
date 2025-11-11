@@ -9,7 +9,16 @@ load_dotenv(BASE_DIR / ".env")  # ✅ add this
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-change-me")  # ✅ change this line
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"  # ✅ change this line
 
-ALLOWED_HOSTS = ["*"]  # ✅ add this if not already there
+# Allowed hosts & CSRF (Render uses onrender.com)
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    "http://localhost,http://127.0.0.1,https://*.onrender.com"
+).split(",")
+
+# If behind a proxy (Render), honor X-Forwarded-Proto for HTTPS detection
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
