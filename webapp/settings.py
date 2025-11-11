@@ -79,3 +79,7 @@ LOGGING = {
 
 STATIC_URL = 'static/'  # ✅ keep or add this
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # ✅ add for deployment later
+
+# Store sessions in signed cookies (no database table needed)
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_COOKIE_SECURE = True  # Render is HTTPS; okay for local too
