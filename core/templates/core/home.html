@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+
+{% block title %}Home • Social Butterfly{% endblock %}
+
+{% block content %}
+  <div class="p-4 bg-white border rounded-3 shadow-sm">
+    <h1 class="h4 mb-2">Welcome</h1>
+    {% if request.session.sb_user_email %}
+      <p class="mb-0">You are signed in. Next we’ll show upcoming events here.</p>
+    {% else %}
+      <p class="mb-0">You’re not signed in. <a href="{% url 'signin' %}">Sign in or create an account</a> to continue.</p>
+    {% endif %}
+  </div>
+{% endblock %}
