@@ -1,0 +1,72 @@
+{% extends "core/base.html" %}
+
+{% block title %}Sign in / Sign up • Social Butterfly{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-3 text-center">Welcome</h1>
+
+        {% if error %}
+          <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
+        {% if info %}
+          <div class="alert alert-info" role="alert">{{ info }}</div>
+        {% endif %}
+
+        <ul class="nav nav-pills nav-fill mb-3" id="authTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="signin-tab" data-bs-toggle="pill" data-bs-target="#signin-pane" type="button" role="tab">Sign in</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="signup-tab" data-bs-toggle="pill" data-bs-target="#signup-pane" type="button" role="tab">Sign up</button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- Sign in -->
+          <div class="tab-pane fade show active" id="signin-pane" role="tabpanel">
+            <form method="post" novalidate>
+              {% csrf_token %}
+              <input type="hidden" name="action" value="signin">
+              <div class="mb-3">
+                <label for="signin-email" class="form-label">Email address</label>
+                <input id="signin-email" name="email" type="email" class="form-control" required placeholder="you@example.com" autocomplete="email">
+              </div>
+              <div class="mb-3">
+                <label for="signin-password" class="form-label">Password</label>
+                <input id="signin-password" name="password" type="password" class="form-control" required placeholder="••••••••" autocomplete="current-password">
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Sign in</button>
+            </form>
+          </div>
+
+          <!-- Sign up -->
+          <div class="tab-pane fade" id="signup-pane" role="tabpanel">
+            <form method="post" novalidate>
+              {% csrf_token %}
+              <input type="hidden" name="action" value="signup">
+              <div class="mb-3">
+                <label for="signup-email" class="form-label">Email address</label>
+                <input id="signup-email" name="email" type="email" class="form-control" required placeholder="you@example.com" autocomplete="email">
+              </div>
+              <div class="mb-3">
+                <label for="signup-password" class="form-label">Password</label>
+                <input id="signup-password" name="password" type="password" class="form-control" required placeholder="At least 6 characters" autocomplete="new-password">
+              </div>
+              <div class="mb-3">
+                <label for="signup-password-confirm" class="form-label">Confirm password</label>
+                <input id="signup-password-confirm" name="password_confirm" type="password" class="form-control" required placeholder="Repeat password" autocomplete="new-password">
+              </div>
+              <button type="submit" class="btn btn-success w-100">Create account</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
