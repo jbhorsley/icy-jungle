@@ -1,19 +1,23 @@
 import os
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods, require_POST
 from supabase import create_client, Client
+from django.utils.dateparse import parse_datetime
 
+def _sb() -> Client | None:
+    url = os.getenv("SUPABASE_URL")
+    anon_key = os.getenv("SUPABASE_ANON_KEY")
+    if not url or not anon_key:
+        return None
+    return create_client(url, anon_key)
 
 def home(request):
-    return render(request, "core/home.html")  # switched to template
-
+    # renders event list (ok if you still have the simple version)
+    return render(request, "core/home.html")
 
 @require_http_methods(["GET", "POST"])
 def signin(request):
-    error = None
-    info = None
-
+    error, info = None, None
     if request.method == "POST":
         action = request.POST.get("action", "signin")
         email = request.POST.get("email", "").strip()
@@ -24,18 +28,15 @@ def signin(request):
             error = "Please enter both email and password."
         else:
             try:
-                url = os.getenv("SUPABASE_URL")
-                anon_key = os.getenv("SUPABASE_ANON_KEY")
-                if not url or not anon_key:
+                sb = _sb()
+                if not sb:
                     error = "Server is missing Supabase credentials."
                 else:
-                    supabase: Client = create_client(url, anon_key)
-
                     if action == "signup":
                         if password != password_confirm:
                             error = "Passwords do not match."
                         else:
-                            res = supabase.auth.sign_up({"email": email, "password": password})
+                            res = sb.auth.sign_up({"email": email, "password": password})
                             if getattr(res, "session", None):
                                 request.session["sb_access_token"] = res.session.access_token
                                 request.session["sb_refresh_token"] = res.session.refresh_token
@@ -43,9 +44,9 @@ def signin(request):
                                 request.session["sb_user_email"] = res.user.email
                                 return redirect("home")
                             else:
-                                info = "Account created. If confirmation is required, check your email."
+                                info = "Account created. Check your email if confirmation is required."
                     else:
-                        auth_res = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                        auth_res = sb.auth.sign_in_with_password({"email": email, "password": password})
                         if auth_res and auth_res.session and auth_res.user:
                             request.session["sb_access_token"] = auth_res.session.access_token
                             request.session["sb_refresh_token"] = auth_res.session.refresh_token
@@ -59,10 +60,8 @@ def signin(request):
 
     return render(request, "core/signin.html", {"error": error, "info": info})
 
-
 @require_POST
 def logout(request):
-    # Remove only our Supabase session keys (leave Django session intact)
     for k in ["sb_access_token", "sb_refresh_token", "sb_user_id", "sb_user_email"]:
         request.session.pop(k, None)
     return redirect("signin")
